@@ -1,0 +1,40 @@
+# 将此脚本放在zabbix alertscripts 目录内, 修改 config.py 配置信息
+# zabbix页面配置动作:
+# Default subject
+# {EVENT.ID}_1
+#
+# Default message
+# triggervalue|{TRIGGER.VALUE}#hostname|{HOSTNAME1}#ipaddress|{IPADDRESS}#hostgroup|{TRIGGER.HOSTGROUP.NAME}#triggernseverity|{TRIGGER.NSEVERITY}#triggername|{TRIGGER.NAME}#triggerkey|{TRIGGER.KEY1}#triggeritems|{ITEM.NAME}#itemvalue|{ITEM.VALUE}#eventid|{EVENT.ID}
+#
+# Recovery subject
+# {EVENT.ID}_0
+#
+# Recovery message
+# triggervalue|{TRIGGER.VALUE}#hostname|{HOSTNAME1}#ipaddress|{IPADDRESS}#hostgroup|{TRIGGER.HOSTGROUP.NAME}#triggernseverity|{TRIGGER.NSEVERITY}#triggername|{TRIGGER.NAME}#triggerkey|{TRIGGER.KEY1}#triggeritems|{ITEM.NAME}#itemvalue|{ITEM.VALUE}#eventid|{EVENT.ID}
+#
+#
+#
+#
+#
+#2.Media types
+#
+#police.py--报警函数：zabbix告警是调用此函数，将事件id推入redis。
+#
+
+# 收敛原理
+# ①所有产生告警均由zabbix调用脚本推入缓存redis当中
+# ②分析系统将在规定时间（1分钟）内去redis中拉取数据，根据定义好的一系列规则进行，合并、分析或直接丢弃，并存入分析平台数据库，以便供历史查询。
+# ③根据预先定义好的规则将报警通过定义好的方式发送给相关人员。
+
+
+├── police
+│   ├── dbread.py    --- 据库查询函数：接收事件id参数，将zabbix数据库内的数据切割分片并返回告警信息
+│   ├── allpolice.py --- 综合函数：将①②③整合起来，定时每1分钟执行一次
+│   ├── operation.py --- 操作函数：接收dbread.py返回的告警信息，进行告警合并，告警压缩处理。并返回处理结果
+│   └── weixin.py    --- 发送微信告警通知函数：将处理结果发送至指定运维人员
+│   └── config.py    --- 配置信息
+├── police.py	     --- 报警函数：zabbix告警是调用此函数，将事件id推入redis。
+
+
+
+
